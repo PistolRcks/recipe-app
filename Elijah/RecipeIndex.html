@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Recipe App Elijah Southman</title>
+	</head>
+	<body>
+        Main Menu <br>
+		<button onclick="location.href='CreateRecipe.html'" type="button">Create a Recipe</button>
+        <button onclick="location.href='CreateIngredient.html'" type="button">Create an Ingredient</button>
+        <button onclick="location.href='SearchRecipe.html'" type="button">Search for Recipes</button>
+        <br>
+        <label for="servingSize">Serving Size:</label>
+        <select name="servingSize" id="servingSize">
+            <option value="1">Normal</option>
+            <option value="0.5">Half</option>
+            <option value="2">Double</option>
+        </select>
+        <script>
+            var e = document.getElementById("servingSize");
+            var servingSize = e.value;
+            var text = e.options[e.selectedIndex].text;
+            function onChange()
+            {
+                servingSize = e.value;
+                servingSizeText = e.options[e.selectedIndex].text;
+                console.log(servingSize, servingSizeText);
+            }
+            e.onchange = onChange;
+            onChange();
+        </script>
+	</body>
+</html>
