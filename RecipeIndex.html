@@ -4,12 +4,23 @@
 		<title>Recipe App Elijah Southman</title>
 	</head>
 	<body>
-        Main Menu <br>
-        <button onclick="location.href='CreateMeal.html'" type="button">Create a Meal</button>
-		<button onclick="location.href='CreateRecipe.html'" type="button">Create a Recipe</button>
-        <button onclick="location.href='CreateIngredient.html'" type="button">Create an Ingredient</button>
-        <button onclick="location.href='SearchRecipe.html'" type="button">Search for Recipes</button>
-        <button onclick="location.href='SearchMeal.html'" type="button">Search for Meal</button>
+        Main Menu
+        <br>
+        <form action="CreateMeal.php">
+            <input type="submit" value="Create a Meal"/>
+        </form>
+        <form action="CreateRecipe.php">
+            <input type="submit" value="Create a Recipe"/>
+        </form>
+        <form action="CreateIngredient.php">
+            <input type="submit" value="Create an Ingredient"/>
+        </form>
+        <form action="SearchRecipe.php">
+            <input type="submit" value="Search for Recipes"/>
+        </form>
+        <form action="SearchMeal.php">
+            <input type="submit" value="Search for Meal"/>
+        </form>
         <br>
         <label for="servingSize">Serving Size:</label>
         <select name="servingSize" id="servingSize">
@@ -17,15 +28,19 @@
             <option value="0.5">Half</option>
             <option value="2">Double</option>
         </select>
+        <label id = "servingSizeDisplay">
+            Serving Size: Normal, 1
+        </label>
         <script>
             var e = document.getElementById("servingSize");
             var servingSize = e.value;
-            var text = e.options[e.selectedIndex].text;
+            var servingSizeText = e.options[e.selectedIndex].text;
             function onChange()
             {
                 servingSize = e.value;
                 servingSizeText = e.options[e.selectedIndex].text;
                 console.log(servingSize, servingSizeText);
+                document.getElementById('servingSizeDisplay').innerHTML = "Serving Size: " + servingSizeText + ", " + servingSize;
             }
             e.onchange = onChange;
             onChange();
