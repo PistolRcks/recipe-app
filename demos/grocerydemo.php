@@ -2,6 +2,15 @@
 <html>
 
 <head>
+    <style>
+        table,
+        th,
+        td {
+            min-width: 200px;
+            border: 1px solid black;
+        }
+    </style>
+    <title>Grocery List Creator</title>
 </head>
 
 <body>
@@ -13,11 +22,14 @@
     class Ingredient
     {
         public $id;
+        public $quantity;
+        public $unitMeasurement;
         public $name;
         public $type;
     }
 
-    class Recipe {
+    class Recipe
+    {
         public $id;
         public $name;
         public $ingredients;
@@ -30,73 +42,122 @@
         public $recipes;
     }
 
+    class GroceryList
+    {
+        public $mealNames;
+        public $ingredientsNeeded;
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['addMeal']) && !empty($_POST['meal'])) {
-            foreach ($_SESSION['meals'] as $meal) {
-                if ($meal->id === $_POST['meal']) {
-                    echo "M: " . $meal->name . "<br>";
-                    foreach ($meal->recipes as $recipe) {
-                        echo "R: ". $recipe->name . "<br>";
-                        foreach ($recipe->ingredients as $ingredient) {
-                            foreach ($_SESSION['ingredients'] as $ingredientdata) {
-                                if ($ingredient === $ingredientdata->id) {
-                                    echo "I: ". $ingredientdata->name . "<br>";
+            foreach ($_SESSION['allMeals'] as $dbMeal) {
+                if ($dbMeal->name === $_POST['meal']) {
+                    $_SESSION['groceryList']->mealNames[] = $dbMeal->name;
+                    foreach ($dbMeal->recipes as $dbRecipe) {
+                        foreach ($dbRecipe->ingredients as $dbIngredient) {
+                            $inListAlready = false;
+                            foreach ($_SESSION['groceryList']->ingredientsNeeded as $neededIngredient) {
+                                if ($dbIngredient->name === $neededIngredient->name) {
+                                    $inListAlready = true;
+                                    $neededIngredient->quantity += $dbIngredient->quantity;
                                 }
+                            }
+                            if (!$inListAlready) {
+                                $_SESSION['groceryList']->ingredientsNeeded[] = $dbIngredient;
                             }
                         }
                     }
                 }
             }
         } else if (isset($_POST['clearMeals'])) {
+            $_SESSION['groceryList']->mealNames = array();
+            $_SESSION['groceryList']->ingredientsNeeded = array();
         }
     } else {
-        $_SESSION['meals'] = array();
+
+        $_SESSION['allingredients'] = array();
+        $allingredients = $conn->query("SELECT * FROM ingredient");
+        while ($ingredient = $allingredients->fetch_assoc()) {
+            $tempIngredient = new Ingredient();
+            $tempIngredient->id = $ingredient["idIngredient"];
+            $tempIngredient->name = $ingredient["name"];
+            $tempIngredient->type = $ingredient["foodtype"];
+            $_SESSION['allingredients'][] = $tempIngredient;
+        }
+
+        $_SESSION['groceryList'] = new GroceryList();
+        $_SESSION['groceryList']->mealNames = array();
+        $_SESSION['groceryList']->ingredientsNeeded = array();
+
+        $_SESSION['allMeals'] = array();
         $meals = $conn->query("SELECT idMeal,name FROM meal");
-        while ($row = $meals->fetch_assoc()) {
+        while ($meal = $meals->fetch_assoc()) {
             $tempMeal = new Meal();
-            $tempMeal->id = $row["idMeal"];
-            $tempMeal->name = $row["name"];
+            $tempMeal->id = $meal["idMeal"];
+            $tempMeal->name = $meal["name"];
             $tempMeal->recipes = array();
-            $mealrecipe = $conn->query("SELECT idRecipe FROM mealrecipe WHERE idMeal = " . $row["idMeal"]);
-            while ($row = $mealrecipe->fetch_assoc()) {
+
+            $mealrecipes = $conn->query("SELECT idRecipe FROM mealrecipe WHERE idMeal = " . $meal["idMeal"]);
+            while ($mealrecipe = $mealrecipes->fetch_assoc()) {
                 $tempRecipe = new Recipe();
-                $tempRecipe->id = $row["idRecipe"];
-                $recipe = $conn->query("SELECT name FROM recipe WHERE idRecipe = " . $row["idRecipe"]);
-                while ($row2 = $recipe->fetch_assoc()) {
-                    $tempRecipe->name = $row2["name"];
-                }
+                $tempRecipe->id = $mealrecipe["idRecipe"];
+                $recipes = $conn->query("SELECT name FROM recipe WHERE idRecipe = " . $mealrecipe["idRecipe"]);
+                $tempRecipe->name = $recipes->fetch_assoc()["name"];
                 $tempRecipe->ingredients = array();
-                $recipeingredient = $conn->query("SELECT idIngredient FROM recipeingredient WHERE idRecipe = " . $row["idRecipe"]);
-                while ($row3 = $recipeingredient->fetch_assoc()) {
-                    $tempRecipe->ingredients[] = $row3["idIngredient"];
+
+                $recipeingredients = $conn->query("SELECT idIngredient,quantity,unitMeasurement FROM recipeingredient WHERE idRecipe = " . $mealrecipe["idRecipe"]);
+                while ($recipeingredient = $recipeingredients->fetch_assoc()) {
+                    $tempIngredient = new Ingredient();
+
+                    $tempIngredient->id = $recipeingredient["idIngredient"];
+                    foreach ($_SESSION['allingredients'] as $dbIngredient) {
+                        if ($tempIngredient->id === $dbIngredient->id) {
+                            $tempIngredient->name = $dbIngredient->name;
+                            $tempIngredient->type = $dbIngredient->type;
+                        }
+                    }
+                    $tempIngredient->quantity = $recipeingredient["quantity"];
+                    $tempIngredient->unitMeasurement = $recipeingredient["unitMeasurement"];
+
+                    $tempRecipe->ingredients[] = $tempIngredient;
                 }
                 $tempMeal->recipes[] = $tempRecipe;
             }
-            $_SESSION['meals'][] = $tempMeal;
-        }
-
-        $_SESSION['ingredients'] = array();
-        $ingredients = $conn->query("SELECT * FROM ingredient");
-        while ($row = $ingredients->fetch_assoc()) {
-            $tempIngredient = new Ingredient();
-            $tempIngredient->id = $row["idIngredient"];
-            $tempIngredient->name = $row["name"];
-            $tempIngredient->type = $row["foodtype"];
-            $_SESSION['ingredients'][] = $tempIngredient;
+            $_SESSION['allMeals'][] = $tempMeal;
         }
     }
     ?>
     <form method="post">
-        <input type="text" name="meal" list="meals">
+        <i>(Click the text box to display available options, or start typing!)</i><br>
+        <input type="text" name="meal" list="meals" onmouseover='this.focus()'><br>
         <datalist id="meals">
             <?php
-            foreach ($_SESSION['meals'] as $meal) {
-                echo "<option label='" . $meal->name . "' value='" . $meal->id . "'>";
+            foreach ($_SESSION['allMeals'] as $meal) {
+                echo "<option label='" . $meal->name . "' value='" . $meal->name . "'>";
             }
             ?>
         </datalist>
-        <input type="submit" name="addMeal" value="Add Meal to Grocery List!">
-        <input type="submit" name="clearMeals" value="Clear Grocery List!">
+        <input type="submit" name="addMeal" value="Add Meal to Grocery List!"><br>
+        <input type="submit" name="clearMeals" value="Clear the Grocery List!">
+        <h1>Grocery List:</h1>
+        <i>Needed for making:<br>
+            <ul> <?php
+                    foreach ($_SESSION['groceryList']->mealNames as $meal) {
+                        echo "<li>" . $meal . "</li>";
+                    }
+                    ?></ul>
+        </i>
+        <table>
+            <tr>
+                <th>Ingredient Name:</th>
+                <th>Amount Needed:</th>
+            </tr>
+            <?php
+            foreach ($_SESSION['groceryList']->ingredientsNeeded as $ingredient) {
+                echo "<tr><td>" . $ingredient->name . "</td><td>" . $ingredient->quantity . " " . $ingredient->unitMeasurement . "</td></tr>";
+            }
+            ?>
+        </table>
     </form>
 </body>
 
