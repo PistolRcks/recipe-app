@@ -5,23 +5,38 @@
 	</head>
 	<body>
         Main Menu
+
         <br>
-        <form action="CreateMeal.php">
-            <input type="submit" value="Create a Meal"/>
+
+        <!-- redirect buttons that call modal before redirecting -->
+        <form id="createMealForm" action="CreateMeal.php">
+            <button onclick="mainMenuModal('createMealForm')" type="button">Create a Meal</button>
         </form>
-        <form action="CreateRecipe.php">
-            <input type="submit" value="Create a Recipe"/>
+        <form id="createRecipeForm" action="CreateRecipe.php">
+            <button onclick="mainMenuModal('createRecipeForm')" type="button">Create a Recipe</button>
         </form>
-        <form action="CreateIngredient.php">
-            <input type="submit" value="Create an Ingredient"/>
+        <form id="createIngredientForm" action="CreateIngredient.php">
+            <button onclick="mainMenuModal('createIngredientForm')" type="button">Create an Ingredient</button>
         </form>
-        <form action="SearchRecipe.php">
-            <input type="submit" value="Search for Recipes"/>
+        <form id="searchRecipeForm" action="SearchRecipe.php">
+            <button onclick="mainMenuModal('searchRecipeForm')" type="button">Search for Recipes</button>
         </form>
-        <form action="SearchMeal.php">
-            <input type="submit" value="Search for Meal"/>
+        <form id="searchMealForm" action="SearchMeal.php">
+            <button onclick="mainMenuModal('searchMealForm')" type="button">Search for Meals</button>
         </form>
+
+        <!-- modal that pops up on screen to confirm or cancel action -->
+        <script>
+            function mainMenuModal(formId)
+            {
+                if(confirm("Are you sure you want to leave this page?"))
+                    document.getElementById(formId).submit();
+            }
+        </script>
+
         <br>
+
+        <!-- serving size dropdown and display -->
         <label for="servingSize">Serving Size:</label>
         <select name="servingSize" id="servingSize">
             <option value="1">Normal</option>
@@ -31,6 +46,8 @@
         <label id = "servingSizeDisplay">
             Serving Size: Normal, 1
         </label>
+
+        <!-- update servingSize modifier and text and update page information upon changing serving size dropdown -->
         <script>
             var e = document.getElementById("servingSize");
             var servingSize = e.value;
