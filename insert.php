@@ -17,7 +17,7 @@
 		exit;
 	}
 	//database connect
-$con = mysqli_connect("mscsdb.uwstout.edu:3306", "meals", "Spaghetti33?", "mealplanner");
+$con = mysqli_connect("mscsdb.uwstout.edu:3306", "mealplanneruser8", "Spaghetti33?", "mealplanner8");
 echo 'connected.';
 
 	if(mysqli_connect_errno())
@@ -25,41 +25,24 @@ echo 'connected.';
 		printf("Connect failed:  %s\n", mysqli_connect_error());
 		exit();
 	}
-	echo 'query.';
 	$name = $data['IngreditName'];
 	$type = $data['IngreditType'];
 	// do a database query to get the information for each ingredient 
 	$query = "SELECT * FROM mealplanner8.ingredient WHERE name = '$name';";
-	//$query->execute(['IngreditName' => $data['IngreditName']]);
+
 	$results = mysqli_query($con, $query);
-	echo 'finish';
-	//if (!empty($results->fetch())) {
-    //echo 'That food exists in this database.';
-    //exit;
-	//}
-	echo 'test20.           -';
-	//$query = "SELECT MAX(idIngredient) FROM mealplanner8.ingredient;";
-	$number = 149;
+	
+	echo 'test20.-';
+	$query = "SELECT MAX(idIngredient) FROM mealplanner8.ingredient;";
+	$number = mysqli_query($con, $query);
 	echo $number;
     $query = "INSERT INTO mealplanner8.ingredient (idIngredient, name, foodtype) VALUES ('$number', '$name', '$type');";
-	//INSERT INTO mealplanner8.ingredient (idIngredient, name, foodtype) VALUES (140,"test","test");
-	//$con->prepare($query)->execute([$number, $name, $type]);
-	//$query->execute([
-		//'idIngredient'=> $number++,
-		//'name' => $data['IngreditName'],
-		//'foodtype' => $data['IngreditType']
-	//]);
-	/*
-	if ($conn->query($sql) === TRUE) {
-  echo "New record created successfully";
-} else {
-  echo "Error: " . $sql . "<br>" . $conn->error;
-}*/
+	
     
 if ($con->query($query) == TRUE) {
   echo "New record created successfully";
 } else {
-  echo "Error: " . $query . "<br>" . $conn->error;
+  echo "Error: " . $query . "error code:" . $con->error;
 }
 	mysqli_close($con);
 // check email SELECT * FROM mealplanner8.ingredient;
