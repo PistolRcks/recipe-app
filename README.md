@@ -1,6 +1,5 @@
 # recipe-app
 *A school project used to learn Agile practices in CS358*
----
 
 ## What is This?
 This is a school project for our CS358 class. It is meant to be a webapp which communicates with a database (only accessible on-campus) to allow for the creation of ingredients, recipes (which are made of ingredients), meals (which are made of recipes), and grocery lists (which are made of meals).
