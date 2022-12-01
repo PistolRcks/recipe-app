@@ -63,7 +63,10 @@
                 while ($row = $result->fetch_assoc()) {
                     $foodtypes .= "<option label='" . $row["foodtype"] . "' value='" . $row["foodtype"] . "'>";
                 }
-                echo $foodtypes;
+				echo $foodtypes;
+
+				// close the connection for safety
+				$conn->close();
                 ?>
             </datalist>
             <input style="width: 100%;" type="submit" value="Add Ingredient!">

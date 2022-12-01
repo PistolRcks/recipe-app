@@ -52,6 +52,9 @@ foreach ($ethniclist as $ethnic) {
 }
 
 echo $ethnicnames;
+
+// close the connection for safety
+$conn->close();
 ?>
 			</datalist>
 			<h2>Selected Recipes:</h2>

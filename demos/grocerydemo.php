@@ -125,7 +125,11 @@
             }
             $_SESSION['allMeals'][] = $tempMeal;
         }
-    }
+	}
+
+
+	// close the connection for safety
+	$conn->close();
     ?>
     <form method="post">
         <i>(Click the text box to display available options, or start typing!)</i><br>
