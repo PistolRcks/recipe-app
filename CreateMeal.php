@@ -2,37 +2,44 @@
 <html>
 	<head>
 		<title>Create Meal</title>
+<script type="text/javascript">
+// gross global variables
+var selectedRecipeIds = [];
+
+// update the recipe list at the bottom
+function updateList() {
+	var recipeId = document.getElementById("recipe").value;
+	var list = document.getElementById("selected_recipes");
+	var recipeName = document.getElementById("recipe_" + recipeId).label;
+
+	if (list.innerHTML === "You haven't selected any recipes!") {
+		// selected recipe name is recipe_{id}
+		list.innerHTML = "<p>" + recipeName;
+	} else {
+		// append if the standard text is already there
+		list.innerHTML += "<p>" + recipeName;
+	}
+	list.innerHTML += "</p>";
+
+	// remove text from textbox to make it easier
+	document.getElementById("recipe").value = "";
+	
+	selectedRecipeIds.push(recipeId);
+}
+</script>
 	</head>
 	<body>
 		<h1>Create a Meal</h1>
 		<!-- TODO: Beautify this later -->
 		<form action="">
-			<label for="recipe">Select Recipes</label><br>
-			<input type='text' name='recipe' list='recipe' onmouseover='this.focus()' placeholder="Search recipes...">
-			<!-- Shamelessly steal -->
-            <datalist id='recipe'>
-<?php
-// Fill dropdown with recipes
-$conn = new mysqli("mscsdb.uwstout.edu", "mealplanneruser8", "Spaghetti33?", "mealplanner8");
-$result = $conn->query("SELECT name, idRecipe FROM recipe");
-
-$recipenames = "";
-while ($row = $result->fetch_assoc()) {
-	$recipenames .= "<option label='" . $row["name"] . "' value='" . $row["idRecipe"] . "'>";
-}
-
-echo $recipenames;
-?>
-			</datalist>
-			<!-- TODO: Button should add selected idRecipe to the sql ADD ROW op 
-				and add the name to the list
-			-->
-			<input id="recipe_add" type="button" value="Add Recipe"><br><br>
+			<label for="name">Meal Name: </label>
+			<input type="text" name="name" placeholder="Enter meal name..."><br>
 
 			<label for="ethnic">Ethnicity: </label>
-			<input type='text' name='ethnic' list='ethnic' onmouseover='this.focus()' placeholder="Search ethnicities, or make one...">
-			<datalist id="ethnic">
+			<input type='text' name='ethnic' list='ethnic_dl' onmouseover='this.focus()' placeholder="Search ethnicities, or make one...">
+			<datalist id="ethnic_dl">
 <?php
+$conn = new mysqli("mscsdb.uwstout.edu", "mealplanneruser8", "Spaghetti33?", "mealplanner8");
 $result = $conn->query("SELECT ethnicGroup FROM meal");
 
 // Make sure there are no duplicates first
@@ -52,15 +59,34 @@ foreach ($ethniclist as $ethnic) {
 }
 
 echo $ethnicnames;
+?>
+			</datalist><br><br>
+
+			<label for="recipe">Select Recipes</label><br>
+			<input id="recipe" type='text' name='recipe' list='recipe_dl' onmouseover='this.focus()' placeholder="Search recipes...">
+			<!-- Shamelessly steal -->
+            <datalist id='recipe_dl'>
+<?php
+// Fill dropdown with recipes
+$result = $conn->query("SELECT name, idRecipe FROM recipe");
+
+$recipenames = "";
+while ($row = $result->fetch_assoc()) {
+	$recipenames .= "<option id='recipe_" . $row["idRecipe"] . "' label='" . $row["name"] . "' value='" . $row["idRecipe"] . "'>";
+}
+
+echo $recipenames;
 
 // close the connection for safety
 $conn->close();
 ?>
+
 			</datalist>
-			<h2>Selected Recipes:</h2>
-			<!-- TODO: Added recipes will go here
-				Also this header should probably be dynamically created
+			<!-- TODO: Button should add selected idRecipe to the sql ADD ROW op 
+				and add the name to the list
 			-->
+			<input id="recipe_add" type="button" value="Add Recipe" onclick="updateList()"><br>
+			<h2>Selected Recipes:</h2>
 			<p id="selected_recipes">You haven't selected any recipes!</p><br>
 
 			<!-- TODO: Make modal -->
