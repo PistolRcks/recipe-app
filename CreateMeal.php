@@ -10,21 +10,33 @@ var selectedRecipeIds = [];
 function updateList() {
 	var recipeId = document.getElementById("recipe").value;
 	var list = document.getElementById("selected_recipes");
-	var recipeName = document.getElementById("recipe_" + recipeId).label;
 
-	if (list.innerHTML === "You haven't selected any recipes!") {
-		// selected recipe name is recipe_{id}
-		list.innerHTML = "<p>" + recipeName;
-	} else {
-		// append if the standard text is already there
-		list.innerHTML += "<p>" + recipeName;
+	var recipeName = "";
+	try {
+		recipeName = document.getElementById("recipe_" + recipeId).label;
+	} catch {
+		alert("You must enter something into the text box!");
+		return;
 	}
-	list.innerHTML += "</p>";
+
+	// don't include duplicates
+	if (!selectedRecipeIds.includes(recipeId)) {
+		if (list.innerHTML === "You haven't selected any recipes!") {
+			// selected recipe name is recipe_{id}
+			list.innerHTML = "<p>" + recipeName;
+		} else {
+			// append if the standard text is not there
+			list.innerHTML += "<p>" + recipeName;
+		}
+		list.innerHTML += "</p>";
+		
+		selectedRecipeIds.push(recipeId);
+	} else {
+		alert("You can't insert a recipe more than once!");
+	}
 
 	// remove text from textbox to make it easier
 	document.getElementById("recipe").value = "";
-	
-	selectedRecipeIds.push(recipeId);
 }
 </script>
 	</head>
