@@ -31,6 +31,8 @@ function updateList() {
 		list.innerHTML += "</p>";
 		
 		selectedRecipeIds.push(recipeId);
+		// update cookie for php
+		document.cookie = "selectedRecipeIds=" + JSON.stringify(selectedRecipeIds);
 	} else {
 		alert("You can't insert a recipe more than once!");
 	}
@@ -43,12 +45,12 @@ function updateList() {
 	<body>
 		<h1>Create a Meal</h1>
 		<!-- TODO: Beautify this later -->
-		<form action="">
+		<form method="post">
 			<label for="name">Meal Name: </label>
-			<input type="text" name="name" placeholder="Enter meal name..."><br>
+			<input type="text" name="name" placeholder="Enter meal name..." required><br>
 
 			<label for="ethnic">Ethnicity: </label>
-			<input type='text' name='ethnic' list='ethnic_dl' onmouseover='this.focus()' placeholder="Search ethnicities, or make one...">
+			<input type='text' name='ethnic' list='ethnic_dl' placeholder="Search ethnicities, or make one..." required>
 			<datalist id="ethnic_dl">
 <?php
 $conn = new mysqli("mscsdb.uwstout.edu", "mealplanneruser8", "Spaghetti33?", "mealplanner8");
@@ -75,7 +77,7 @@ echo $ethnicnames;
 			</datalist><br><br>
 
 			<label for="recipe">Select Recipes</label><br>
-			<input id="recipe" type='text' name='recipe' list='recipe_dl' onmouseover='this.focus()' placeholder="Search recipes...">
+			<input id="recipe" type='text' name='recipe' list='recipe_dl' placeholder="Search recipes...">
 			<!-- Shamelessly steal -->
             <datalist id='recipe_dl'>
 <?php
@@ -88,21 +90,51 @@ while ($row = $result->fetch_assoc()) {
 }
 
 echo $recipenames;
-
-// close the connection for safety
-$conn->close();
 ?>
 
 			</datalist>
-			<!-- TODO: Button should add selected idRecipe to the sql ADD ROW op 
-				and add the name to the list
-			-->
 			<input id="recipe_add" type="button" value="Add Recipe" onclick="updateList()"><br>
 			<h2>Selected Recipes:</h2>
 			<p id="selected_recipes">You haven't selected any recipes!</p><br>
 
 			<!-- TODO: Make modal -->
-			<input id="create" type="button" value="Create Meal" name="create">
+			<input id="create" type="submit" value="Create Meal">
+<?php
+// Don't put anything in if we don't need to!
+if ($_POST["name"] != "" && $_POST["ethnic"] && isset($_POST["name"]) && isset($_POST["ethnic"])) {
+	// Handle input into MealPlanner
+	$mealname = $_POST["name"];
+	$mealethnic = $_POST["ethnic"];
+
+	// 0) Get new idMeal because apparently it doesn't make those
+	$result = $conn->query("SELECT MAX(idMeal) FROM meal");
+	if (!$result) {
+		die("Meal creation failed! Please try again.");
+	}
+
+	$mealid = $result->fetch_row()[0] + 1;
+
+	// 1) Insert into `meal`
+	$result = $conn->query("INSERT INTO meal (idMeal, name, ethnicGroup) VALUES ('$mealid', '$mealname', '$mealethnic')");
+	if (!$result) {
+		die("Meal creation failed! Please try again.");
+	}
+
+	// 2) Insert FK's into `mealrecipe`
+	$recipeids = json_decode($_COOKIE["selectedRecipeIds"]);
+	foreach ($recipeids as $recipeid) {
+		$result = $conn->query("INSERT INTO mealrecipe (idMeal, idRecipe) VALUES ($mealid, $recipeid)");
+		if (!$result) {
+			die("Meal creation failed! Please try again.");
+		}
+	}
+
+	echo "<p>Meal '$mealname' successfully created!</p>";
+}
+
+// close the connection for safety
+$conn->close();
+?>
 		</form>
 	</body>
 </html>
