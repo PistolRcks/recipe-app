@@ -51,16 +51,38 @@
 	<h1>Ingredient Creator</h1>
 	<span style="height: 16px;"></span>
 	<div>
-		<form action='https://www.w3schools.com/action_page.php' style="padding: 16px;">
+		<form method="post" style="padding: 16px;">
+			<?php
+			// create connection to database
+			$conn = new mysqli("mscsdb.uwstout.edu", "mealplanneruser8", "Spaghetti33?", "mealplanner8");
+
+			if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addIngredient'])) {
+				$result = $conn->query("SELECT * FROM ingredient");
+				$ingredientExists = false;
+				while ($row = $result->fetch_assoc()) {
+					if (strtolower($_POST['name']) === strtolower($row["name"]) && strtolower($_POST['foodtype']) === strtolower($row["foodtype"])) {
+						$ingredientExists = true;
+					}
+				}
+				if (!$ingredientExists) {
+					$numIngredients = mysqli_fetch_assoc($conn->query("SELECT COUNT(*) FROM ingredient"))['COUNT(*)'];
+					if ($conn->query("INSERT INTO ingredient (idIngredient,name,foodtype) VALUES (" . ++$numIngredients. ",'". $_POST['name'] . "','" . $_POST['foodtype'] . "')") === TRUE) {
+						echo "<p style='color: green;'><b>Success!</b> Ingredient added to database.</p><br>";
+					} else {
+						echo "<p style='color: red;'><b>Error!</b> " . $conn->error . "</p><br>";
+					}
+				} else {
+					echo "<p style='color: red;'><b>Error!</b> Ingredient already exists!</p><br>";
+				}
+			}
+			?>
 			<p><b>Ingredient Name:</b></p><br>
-			<input type='text' name='name' onmouseover='this.focus()'><br><br>
+			<input type='text' name='name' onmouseover='this.focus()' required><br><br>
 			<p><b>Ingredient Type:</b></p>
 			<p style="font-size: 9px;"><i>(click the text box to display pre-existing types, or add a new one if it does not exist)</i></p><br>
-			<input type='text' name='foodtype' list='foodtype' onmouseover='this.focus()'><br><br>
+			<input type='text' name='foodtype' list='foodtype' onmouseover='this.focus()' required><br><br>
 			<datalist id='foodtype'>
 				<?php
-				// create connection to database
-				$conn = new mysqli("mscsdb.uwstout.edu", "mealplanneruser8", "Spaghetti33?", "mealplanner8");
 				// send query to find all ingredient types
 				$result = $conn->query("SELECT DISTINCT foodtype FROM ingredient");
 				// iterate through each type and add it to a datalist
@@ -73,7 +95,7 @@
 				$conn->close();
 				?>
 			</datalist>
-			<input style="width: 100%;" type="submit" value="Add Ingredient!">
+			<input style="width: 100%;" name="addIngredient" type="submit" value="Add Ingredient!">
 		</form>
 	</div>
 </body>
