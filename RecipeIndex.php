@@ -27,34 +27,39 @@
 			$modalText = "Are you sure you want to leave this page?";
 
 			$modalId = "1";
-			$modalAction = "CreateMeal.php";
+			$modalAction = "create/CreateMeal.php";
 			$buttonText = "Create a Meal";
-			include "Modal.php";
+			include "includes/Modal.php";
 
 			$modalId = "2";
-			$modalAction = "CreateRecipe.php";
+			$modalAction = "create/CreateRecipe.php";
 			$buttonText = "Create a Recipe";
-			include "Modal.php";
+			include "includes/Modal.php";
 
 			$modalId = "3";
-			$modalAction = "CreateIngredientNew.php";
+			$modalAction = "create/CreateIngredient.php";
 			$buttonText = "Create an Ingredient";
-			include "Modal.php";
+			include "includes/Modal.php";
 
 			$modalId = "4";
-			$modalAction = "GroceryList.php";
+			$modalAction = "other/GroceryList.php";
 			$buttonText = "Create a Grocery List";
-			include "Modal.php";
+			include "includes/Modal.php";
 
 			$modalId = "5";
-			$modalAction = "SearchRecipe.php";
+			$modalAction = "search/SearchRecipe.php";
 			$buttonText = "Search for Recipes";
-			include "Modal.php";
+			include "includes/Modal.php";
 
 			$modalId = "6";
-			$modalAction = "SearchMeal.php";
+			$modalAction = "search/SearchMeal.php";
 			$buttonText = "Search for Meals";
-			include "Modal.php";
+			include "includes/Modal.php";
+
+			$modalId = "7";
+			$modalAction = "other/CompareRecipes.php";
+			$buttonText = "Compare Recipes";
+			include "includes/Modal.php";
 
 			?>
 		</div>
