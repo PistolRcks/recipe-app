@@ -73,7 +73,7 @@ function updateList() {
 </head>
 	<body>
 	<!-- Main form to input data -->
-		<form action = "recipeCreation.php" method="POST">
+		<form action = "CreateRecipe.php" method="POST">
 
 			Recipe Title: <input type="text" name="recipeName" id="recipeName" class="form-control">
 			<br>
