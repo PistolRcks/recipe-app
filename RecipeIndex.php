@@ -61,6 +61,11 @@
 			$buttonText = "Compare Recipes";
 			include "includes/Modal.php";
 
+
+			$modalId = "8";
+			$modalAction = "other/SelectRecipes.php";
+			$buttonText = "Select Recipes";
+			include "includes/Modal.php";
 			?>
 		</div>
 		<br>
