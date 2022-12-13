@@ -66,13 +66,10 @@
 		exit();
 	}
 	// example input (recipes 1-9)
-	$testarray = [1,2,3,4,5,6,7,8,9];
+	$testarray = [1,2,3,4,5,6,7,8,9,10,11,12];
 	// example function call
-	$resultArray = compareRecipes($testarray, $con);
-	// prints out the array of recipes with matching ingredients
-	for ($x = 0; $x < count($resultArray); $x++) {
-		print($resultArray[$x]);
-	}
+	print_r(compareRecipes($testarray, $con));
+	
 	
 	mysqli_close($con);
 ?>
