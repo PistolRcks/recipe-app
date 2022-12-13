@@ -111,8 +111,6 @@ if ($_POST["name"] != "" && $_POST["ethnic"] && isset($_POST["name"]) && isset($
 
 // close the connection for safety
 $conn->close();
-echo $recipenames;
-echo $ethnicnames;
 ?>
 
 		<h1>Create a Meal</h1>
