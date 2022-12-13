@@ -64,7 +64,7 @@
 
 
 					<h2>Meal Planning</h2>
-			<form action = "insert.php" method="POST">
+			<form action = "CreateIngredient.php" method="POST">
 
 			Name: <input type="text" name="IngreditName" id="IngreditName" class="form-control">
 
